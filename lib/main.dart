@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:qrunner/components/read_code_card.dart';
-import 'package:qrunner/components/read_code_screen.dart';
+import 'package:qrunner/components/screens/read_codes_list_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,31 +30,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ListView.builder(
-                itemCount: 10,
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return ReadCodeCard(index: index, onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-                      return ReadCodeScreen();
-                    }));
-                  },);
-                }
-              )
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: const ReadCodesListScreen(),
     );
   }
 }
