@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:qrunner/components/screens/read_codes_list_screen.dart';
+import 'package:qrunner/components/screens/auth/login_screen.dart';
+import 'package:qrunner/components/screens/home_screen.dart';
 import 'package:qrunner/configuration/firebase/firebase_options.dart';
-import 'configuration/firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,27 +21,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: const MyHomePage(title: 'QRunner'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: const ReadCodesListScreen(),
+      home: const HomeScreen(),
+      routes: {
+        LoginScreen.id: (context) => const LoginScreen(),
+      }
     );
   }
 }
