@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qrunner/components/constants/strings.dart';
+import 'package:qrunner/constants/strings.dart';
 
 class ReadCodeCard extends StatelessWidget {
   const ReadCodeCard(

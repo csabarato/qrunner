@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:qrunner/components/screens/auth/login_screen.dart';
+import 'package:qrunner/components/screens/auth/registration_screen.dart';
 import 'package:qrunner/components/screens/home_screen.dart';
 import 'package:qrunner/configuration/firebase/firebase_options.dart';
 
@@ -17,14 +18,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Qrunner App',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: const HomeScreen(),
-      routes: {
-        LoginScreen.id: (context) => const LoginScreen(),
-      }
-    );
+        title: 'Qrunner App',
+        theme: ThemeData(
+          primarySwatch: Colors.blueGrey,
+        ),
+        home: const HomeScreen(),
+        routes: {
+          LoginScreen.id: (context) => const LoginScreen(),
+          RegistrationScreen.id: (context) => const RegistrationScreen(),
+        });
   }
 }

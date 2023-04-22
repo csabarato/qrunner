@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrunner/components/constants/strings.dart';
+import 'package:qrunner/constants/strings.dart';
 
 class GoogleSignInButton extends StatelessWidget {
   const GoogleSignInButton({Key? key, required this.onPressed})
@@ -30,7 +30,8 @@ class GoogleSignInButton extends StatelessWidget {
               Text(
                 kGoogleSignIn,
                 //style: TextStyle(color: Colors.black, fontSize: 16.0),
-                style: GoogleFonts.lexendDeca(color: Colors.white, fontSize: 15.0),
+                style:
+                    GoogleFonts.lexendDeca(color: Colors.white, fontSize: 15.0),
               ),
             ],
           ),

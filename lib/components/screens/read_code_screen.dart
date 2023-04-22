@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../constants/strings.dart';
+import '../../constants/strings.dart';
 
 class ReadCodeScreen extends StatefulWidget {
   const ReadCodeScreen(

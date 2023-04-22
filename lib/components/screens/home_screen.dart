@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qrunner/components/text_logo.dart';
 
+import '../../constants/strings.dart';
 import '../buttons/google_sign_in_button.dart';
 import '../buttons/rounded_button.dart';
-import '../constants/strings.dart';
 import 'auth/login_screen.dart';
+import 'auth/registration_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
               RoundedButton(
                 text: kRegistration,
                 onTap: () {
-                  //Navigator.pushNamed(context, RegistrationScreen.id);
+                  Navigator.pushNamed(context, RegistrationScreen.id);
                 },
               ),
               GoogleSignInButton(onPressed: () {
@@ -47,6 +48,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-
   }
 }

@@ -27,7 +27,10 @@ class RoundedButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         style: style,
-        child: Text(text, style: GoogleFonts.lexendDeca(fontSize: 15.0),),
+        child: Text(
+          text,
+          style: GoogleFonts.lexendDeca(fontSize: 15.0),
+        ),
       ),
     );
   }
