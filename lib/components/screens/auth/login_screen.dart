@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       keyboardType: TextInputType.emailAddress,
                       decoration: kTextFieldDecoration.copyWith(
                           labelText: kEmailAddress),
@@ -50,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 48.0,
                     ),
                     TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration:
                           kTextFieldDecoration.copyWith(labelText: kPassword),
                       textAlign: TextAlign.center,

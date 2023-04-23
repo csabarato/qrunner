@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:qrunner/utils/progress_indicators.dart';
 
 import '../../../constants/strings.dart';
 import '../../../constants/styles.dart';
+import '../../../utils/dialog_utils.dart';
 import '../../../utils/validators.dart';
 import '../../buttons/rounded_button.dart';
 import '../../text_logo.dart';
@@ -17,6 +21,7 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _firebaseAuth = FirebaseAuth.instance;
 
   late String username;
   late String email;
@@ -40,6 +45,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         keyboardType: TextInputType.emailAddress,
                         decoration:
                             kTextFieldDecoration.copyWith(labelText: kUsername),
@@ -53,6 +59,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         height: 25.0,
                       ),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         keyboardType: TextInputType.emailAddress,
                         decoration: kTextFieldDecoration.copyWith(
                             labelText: kEmailAddress),
@@ -66,6 +73,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         height: 25.0,
                       ),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration:
                             kTextFieldDecoration.copyWith(labelText: kPassword),
                         textAlign: TextAlign.center,
@@ -78,9 +86,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20.0),
                         child: RoundedButton(
-                          text: kLogin,
+                          text: kRegistration,
                           onTap: () async {
-                            if (_formKey.currentState!.validate()) {}
+                            if (_formKey.currentState!.validate()) {
+                              await showLoadingIndicator(kRegistration);
+                              try {
+                                final userCredential = await
+                                _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+                                final user = userCredential.user;
+                                if (user == null) {
+                                  throw Exception(kRegistrationErrorMsg);
+                                } else {
+                                  await user.sendEmailVerification();
+                                  await user.updateDisplayName(username);
+                                  EasyLoading.dismiss();
+                                  handleRegistrationSuccess();
+                                }
+                              } catch (e) {
+                                EasyLoading.dismiss();
+                                handleRegistrationErrors(e);
+                              }
+                            }
                           },
                         ),
                       )
@@ -93,5 +119,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
+  }
+
+  handleRegistrationSuccess() {
+    showInfoDialog(context, kRegistrationSuccessTitle, kRegistrationSuccessMsg, () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    });
+  }
+
+  handleRegistrationErrors(e) {
+    if (e is FirebaseAuthException) {
+      showErrorDialog(
+          context, e.message!);
+      return;
+    }
+    showErrorDialog(context, e.toString(),);
   }
 }
