@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qrunner/constants/strings.dart';
 
-showErrorDialog(BuildContext context, String message) {
+showErrorDialog(BuildContext context, String message, {String title= kError}) {
   showDialog(context: context, builder: (BuildContext context) {
     return AlertDialog(
-      title: const Text(kError, style: TextStyle(color: Colors.blueAccent),),
+      title: Text(title, style: const TextStyle(color: Colors.blueAccent),),
       content: Text(message),
       actions: [
         TextButton(onPressed: () {
