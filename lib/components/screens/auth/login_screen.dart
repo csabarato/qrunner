@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:qrunner/components/screens/tracks_screen.dart';
 import 'package:qrunner/components/text_logo.dart';
 import 'package:qrunner/constants/strings.dart';
 
 import '../../../constants/styles.dart';
 import '../../../utils/dialog_utils.dart';
-import '../../../utils/validators.dart';
 import '../../buttons/rounded_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,7 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         onChanged: (value) {
                           email = value;
                         },
-                        validator: (value) => validateEmail(value),
                       ),
                       const SizedBox(
                         height: 48.0,
@@ -63,7 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         onChanged: (value) {
                           password = value;
                         },
-                        validator: (value) => validatePassword(value),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -81,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       message: kEmailNotVerifiedMsg,
                                       code: kEmailNotVerifiedMsg);
                                 } else {
-
+                                  navigateToTracksScreen();
                                 }
                               } catch (e) {
                                 handleLoginErrors(e);
@@ -115,5 +113,11 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     showErrorDialog(context, e.toString(),);
+  }
+
+  navigateToTracksScreen() {
+    Navigator.pushNamedAndRemoveUntil(
+        context, TracksScreen.id,
+            (route) => false);
   }
 }

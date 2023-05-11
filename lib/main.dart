@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:qrunner/components/screens/auth/login_screen.dart';
 import 'package:qrunner/components/screens/auth/registration_screen.dart';
 import 'package:qrunner/components/screens/home_screen.dart';
+import 'package:qrunner/components/screens/tracks_screen.dart';
 import 'package:qrunner/configuration/firebase/firebase_options.dart';
 
 void main() async {
@@ -24,10 +26,16 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blueGrey,
         ),
         builder: EasyLoading.init(),
-        home: const HomeScreen(),
+        home: isUserLoggedIn() ? const TracksScreen() : const HomeScreen(),
         routes: {
           LoginScreen.id: (context) => const LoginScreen(),
           RegistrationScreen.id: (context) => const RegistrationScreen(),
+          TracksScreen.id: (context) => const TracksScreen(),
         });
+  }
+
+  static bool isUserLoggedIn() {
+    final auth = FirebaseAuth.instance;
+    return auth.currentUser != null && auth.currentUser!.emailVerified;
   }
 }

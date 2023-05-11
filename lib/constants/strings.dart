@@ -22,6 +22,7 @@ const String kLoginErrorMsg = 'A bejelentkezés nem sikerült';
 const String kWrongPassword = 'Hibás jelszó';
 const String kEmailNotVerifiedMsg = 'Az email cím nincs megerősítve';
 const String kUserNotExists = 'Nincs regisztrált felhasználó ezzel az email címmel.';
+const String kGoogleSignInFailedMsg= "Google bejelentkezés nem sikerült";
 
 // Firebase error codes
 const String kWrongPasswordCode = "wrong-password";
