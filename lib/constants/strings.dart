@@ -11,6 +11,15 @@ const String kUsername = 'felhasználónév';
 const String kEmailAddress = 'email cím';
 const String kPassword = 'jelszó';
 
+// Track data
+const String kTracksScreenTitle = 'Pályák';
+const String kTrackType = 'Versenytípus : ';
+const String kDateTime = 'Időpont : ';
+const String kNumOfPoints = 'Pontok száma : ';
+const String kPointCollecting = 'Pontbegyűjtő';
+const String kFixedOrderedCollecting = 'Kötött sorrendű begyűjtés';
+
+
 // Information messages
 const String kRegistrationSuccessTitle = 'Sikeres regisztráció!';
 const String kRegistrationSuccessMsg = 'Erősítsd meg az email címed, kattints a hivatkozásra a bejövő emailek között.';
