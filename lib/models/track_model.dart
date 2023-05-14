@@ -7,8 +7,9 @@ class TrackModel {
   TrackType trackType;
   DateTime dateTime;
   int numOfPoints;
+  List<String> codeList;
 
-  TrackModel(this.id, this.name, this.trackType, this.dateTime, this.numOfPoints);
+  TrackModel(this.id, this.name, this.trackType, this.dateTime, this.numOfPoints, this.codeList);
 
   @override
   String toString() {

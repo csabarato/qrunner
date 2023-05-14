@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:qrunner/components/cards/track_card.dart';
+import 'package:qrunner/components/screens/read_codes_list_screen.dart';
 import 'package:qrunner/constants/strings.dart';
 import 'package:qrunner/converters/track_converter.dart';
 import 'package:qrunner/models/track_model.dart';
@@ -72,7 +73,14 @@ class _TracksScreenState extends State<TracksScreen> {
   }
 
   TrackCard buildTrackCard(int index) {
-    return TrackCard(trackModel: tracks[index]);
+
+    TrackModel model = tracks[index];
+
+    return TrackCard(trackModel: tracks[index], onTap: () {
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+        return ReadCodesListScreen(numOfPoints: model.numOfPoints, codeList: model.codeList);
+      }));
+    },);
   }
 
   @override
