@@ -78,7 +78,7 @@ class _TracksScreenState extends State<TracksScreen> {
 
     return TrackCard(trackModel: tracks[index], onTap: () {
       Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-        return ReadCodesListScreen(numOfPoints: model.numOfPoints, codeList: model.codeList);
+        return ReadCodesListScreen(trackType: model.trackType, numOfPoints: model.numOfPoints, codeList: model.codeList);
       }));
     },);
   }

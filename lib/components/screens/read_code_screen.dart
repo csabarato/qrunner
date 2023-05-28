@@ -5,11 +5,10 @@ import '../../constants/strings.dart';
 
 class ReadCodeScreen extends StatefulWidget {
   const ReadCodeScreen(
-      {Key? key, required this.index, required this.barcodeMap})
+      {Key? key, required this.index})
       : super(key: key);
 
   final int index;
-  final Map<int, Barcode> barcodeMap;
 
   @override
   State<StatefulWidget> createState() => ReadCodeScreenState();
@@ -26,16 +25,13 @@ class ReadCodeScreenState extends State<ReadCodeScreen> {
       ),
       body: MobileScanner(
         controller: MobileScannerController(
-          detectionSpeed: DetectionSpeed.normal,
+          detectionSpeed: DetectionSpeed.noDuplicates,
           facing: CameraFacing.back,
           torchEnabled: false,
         ),
         onDetect: (capture) {
           final List<Barcode> barcodes = capture.barcodes;
-          for (final barcode in barcodes) {
-            widget.barcodeMap[widget.index] = barcode;
-          }
-          Navigator.pop(context);
+          Navigator.pop(context, barcodes[0].rawValue);
         },
       ),
     );
