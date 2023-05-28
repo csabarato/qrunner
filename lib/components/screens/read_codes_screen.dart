@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qrunner/components/buttons/read_code_button.dart';
+import 'package:qrunner/components/buttons/rounded_button.dart';
 import 'package:qrunner/components/screens/qr_code_reader_screen.dart';
 import 'package:qrunner/constants/strings.dart';
 import 'package:qrunner/models/track_type.dart';
@@ -36,8 +36,10 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ReadCodeButton(
+            padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+            child: RoundedButton(
+              text: kRead,
+              color: Colors.green,
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (BuildContext context) {
@@ -49,9 +51,6 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
               },
             ),
           ),
-          const SizedBox(
-            height: 20.0,
-          ),
           Expanded(
             child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
@@ -61,8 +60,14 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
                 );
               },
               shrinkWrap: true,
-              itemCount: widget.numOfPoints,
+              itemCount: 14,
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: RoundedButton(text: 'Beküldés', onTap: () {
+
+            }),
           )
         ],
       ),
