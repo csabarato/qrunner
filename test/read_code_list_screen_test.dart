@@ -19,10 +19,9 @@ void main() {
     const widget = ReadCodesListScreen(
         trackType: TrackType.fixedOrderCollecting, numOfPoints: 4, codeList: ['a', 'b', 'c', 'd']);
 
-    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-    Widget testWidget = MediaQuery(
-        data: const MediaQueryData(), child: MaterialApp(home: widget, navigatorKey: navigatorKey,));
+    Widget testWidget = const MediaQuery(
+        data: MediaQueryData(), child: MaterialApp(home: widget,));
     final state = widget.createElement().state as ReadCodesListScreenState;
 
     await tester.pumpWidget(testWidget);
