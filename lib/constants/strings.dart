@@ -3,13 +3,16 @@ const String kRegistration = 'Regisztráció';
 const String kGoogleSignIn = 'Google bejelentkezés';
 
 const String kDone = 'Kész';
-const String kRead = 'Beolvas';
+const String kRead = 'Következő pont olvasása';
 const String kPoint = 'pont';
-const String kReadPoint = 'pont beolvasása';
+const String kReadPoint = 'Pont beolvasása';
 
 const String kUsername = 'felhasználónév';
 const String kEmailAddress = 'email cím';
 const String kPassword = 'jelszó';
+
+// Screen titles
+const String kReadCodesTitle = 'Pontok beolvasása';
 
 // Track data
 const String kTracksScreenTitle = 'Pályák';

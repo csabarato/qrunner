@@ -3,25 +3,23 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../constants/strings.dart';
 
-class ReadCodeScreen extends StatefulWidget {
-  const ReadCodeScreen(
-      {Key? key, required this.index})
+class QRCodeReaderScreen extends StatefulWidget {
+  const QRCodeReaderScreen(
+      {Key? key})
       : super(key: key);
 
-  final int index;
-
   @override
-  State<StatefulWidget> createState() => ReadCodeScreenState();
+  State<StatefulWidget> createState() => QRCodeReaderScreenState();
 }
 
-class ReadCodeScreenState extends State<ReadCodeScreen> {
+class QRCodeReaderScreenState extends State<QRCodeReaderScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'qrKey');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.index + 1}. $kReadPoint'),
+        title: const Text(kReadPoint),
       ),
       body: MobileScanner(
         controller: MobileScannerController(
