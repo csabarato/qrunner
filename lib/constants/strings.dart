@@ -6,6 +6,7 @@ const String kDone = 'Kész';
 const String kRead = 'Következő pont olvasása';
 const String kPoint = 'pont';
 const String kReadPoint = 'Pont beolvasása';
+const String kSubmit = 'Beküldés';
 
 const String kUsername = 'felhasználónév';
 const String kEmailAddress = 'email cím';
@@ -35,6 +36,11 @@ const String kWrongPassword = 'Hibás jelszó';
 const String kEmailNotVerifiedMsg = 'Az email cím nincs megerősítve';
 const String kUserNotExists = 'Nincs regisztrált felhasználó ezzel az email címmel.';
 const String kGoogleSignInFailedMsg= "Google bejelentkezés nem sikerült";
+
+const String kCodeReadError = 'Hibás kódolvasás!';
+const String kErrorScannedCodeIsNotTheNext = 'A beolvasott kód nem a következő ponthoz tartozik!';
+const String kErrorScannedCodeNotPresent = 'Keress tovább, ez a pont nem szerepel a pálya pontjai között!';
+const String kErrorCodeAlreadyScanned = 'Ezt a pontot már beolvastad!';
 
 // Firebase error codes
 const String kWrongPasswordCode = "wrong-password";

@@ -25,7 +25,7 @@ void main() {
     final state = widget.createElement().state as ReadCodesScreenState;
 
     await tester.pumpWidget(testWidget);
-    state.onCodeScanned('a');
+    state.onCodeScanned('a', DateTime.now());
 
     await tester.pumpWidget(testWidget);
     expect(1, state.resultBarcodeMap.length);

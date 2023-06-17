@@ -5,6 +5,7 @@ import 'package:qrunner/constants/strings.dart';
 import 'package:qrunner/models/track_type.dart';
 import 'package:qrunner/utils/dialog_utils.dart';
 
+import '../../models/code_scan_data.dart';
 import '../cards/read_code_result_card.dart';
 
 class ReadCodesScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class ReadCodesScreen extends StatefulWidget {
 }
 
 class ReadCodesScreenState extends State<ReadCodesScreen> {
-  Map<int, String> resultBarcodeMap = {};
+  Map<int, CodeScanData> resultBarcodeMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,8 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
             child: RoundedButton(
               text: kRead,
               color: Colors.green,
@@ -45,7 +47,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
                     MaterialPageRoute(builder: (BuildContext context) {
                   return const QRCodeReaderScreen();
                 })).then((value) => {
-                      onCodeScanned(value),
+                      onCodeScanned(value, DateTime.now()),
                       setState(() {}),
                     });
               },
@@ -65,9 +67,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(15.0),
-            child: RoundedButton(text: 'Beküldés', onTap: () {
-
-            }),
+            child: RoundedButton(text: kSubmit, onTap: () {}),
           )
         ],
       ),
@@ -82,40 +82,36 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     return resultBarcodeMap.length < widget.numOfPoints;
   }
 
-  void onCodeScanned(String value) {
+  void onCodeScanned(String value, DateTime scanTimestamp) {
     if (widget.trackType == TrackType.fixedOrderCollecting) {
-      validateCodeFixedOrderType(value);
+      validateCodeFixedOrderType(value, scanTimestamp);
     } else {
-      validateCodePointCollectingType(value);
+      validateCodePointCollectingType(value, scanTimestamp);
     }
   }
 
-  void validateCodeFixedOrderType(String value) {
+  void validateCodeFixedOrderType(String value, DateTime scanTimestamp) {
     int nextPointIndex = resultBarcodeMap.length;
 
     if (widget.codeList[nextPointIndex] != value) {
-      showErrorDialog(
-          context, 'A beolvasott kód nem a következő ponthoz tartozik!',
-          title: 'Hibás kódolvasás!');
+      showErrorDialog(context, kErrorScannedCodeIsNotTheNext,
+          title: kCodeReadError);
     } else {
-      resultBarcodeMap[nextPointIndex] = value;
+      resultBarcodeMap[nextPointIndex] = CodeScanData(value, scanTimestamp);
     }
   }
 
-  void validateCodePointCollectingType(String value) {
+  void validateCodePointCollectingType(String value, DateTime scanTimestamp) {
     if (!widget.codeList.contains(value)) {
-      showErrorDialog(context,
-          'Keress tovább, ez a pont nem szerepel a pálya pontjai között!',
-          title: 'Hibás kódolvasás!');
+      showErrorDialog(context, kErrorScannedCodeNotPresent,
+          title: kCodeReadError);
       return;
     }
     int indexOfCode = widget.codeList.indexOf(value);
     if (resultBarcodeMap[indexOfCode] != null) {
-        showErrorDialog(context,
-            'Ezt a pontot már beolvastad!',
-            title: 'Hibás kódolvasás!');
-        return;
+      showErrorDialog(context, kErrorCodeAlreadyScanned, title: kCodeReadError);
+      return;
     }
-    resultBarcodeMap[indexOfCode] = value;
-    }
+    resultBarcodeMap[indexOfCode] = CodeScanData(value, scanTimestamp);
+  }
 }
