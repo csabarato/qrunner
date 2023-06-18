@@ -8,9 +8,15 @@ class ResultModel {
 
   String userId;
   String trackId;
+
+  @JsonKey(toJson: resultMapToJson)
   Map<int, CodeScanData> resultMap;
 
   ResultModel(this.userId, this.trackId, this.resultMap);
 
   Map<String, dynamic> toJson() => _$ResultModelToJson(this);
+}
+
+Map<String, dynamic> resultMapToJson(Map<int, CodeScanData> resultMap) {
+    return resultMap.map((key, value) => MapEntry(key.toString(),value.toJson()));
 }

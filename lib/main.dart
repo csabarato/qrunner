@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
         builder: EasyLoading.init(),
         home: isUserLoggedIn() ? const TracksScreen() : const HomeScreen(),
         routes: {
+          HomeScreen.id : (context) => const HomeScreen(),
           LoginScreen.id: (context) => const LoginScreen(),
           RegistrationScreen.id: (context) => const RegistrationScreen(),
           TracksScreen.id: (context) => const TracksScreen(),

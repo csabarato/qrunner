@@ -5,7 +5,7 @@ class ResultService {
 
   static final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  static void saveResult(ResultModel model) {
-    // TODO : save result model
+  static Future<void> saveResult(ResultModel model) async {
+    await db.collection("results").add(model.toJson());
   }
 }

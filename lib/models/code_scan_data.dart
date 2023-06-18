@@ -11,4 +11,6 @@ class CodeScanData {
   CodeScanData(this.code, this.scanTimestamp);
 
   factory CodeScanData.fromJson(Map<String, dynamic> json) => _$CodeScanDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CodeScanDataToJson(this);
 }

@@ -14,6 +14,7 @@ import 'auth/registration_screen.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  static const id = 'home_screen';
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }

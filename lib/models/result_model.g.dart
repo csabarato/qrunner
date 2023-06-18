@@ -19,5 +19,5 @@ Map<String, dynamic> _$ResultModelToJson(ResultModel instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'trackId': instance.trackId,
-      'resultMap': instance.resultMap.map((k, e) => MapEntry(k.toString(), e)),
+      'resultMap': resultMapToJson(instance.resultMap),
     };
