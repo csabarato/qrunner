@@ -75,11 +75,13 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
             child: RoundedButton(
                 text: kSubmit,
                 onTap: () async {
-                  final resultModel = ResultModel(
-                      FirebaseAuth.instance.currentUser!.uid,
-                      widget.trackId,
-                      resultBarcodeMap);
-                  saveResults(resultModel);
+                  if (resultBarcodeMap.length < widget.numOfPoints) {
+                    showConfirmDialog(context, kWarningTitle, kTrackNotCompletedWarning, () {
+                      saveResults();
+                    });
+                  } else {
+                    saveResults();
+                  }
                 }),
           )
         ],
@@ -87,8 +89,13 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     );
   }
 
-  saveResults(ResultModel resultModel) async {
+  saveResults() async {
     try {
+      final resultModel = ResultModel(
+          FirebaseAuth.instance.currentUser!.uid,
+          widget.trackId,
+          resultBarcodeMap);
+      
       await ResultService.saveResult(resultModel);
       handleResultSavingSuccess();
     } catch (e) {

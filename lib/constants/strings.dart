@@ -7,6 +7,7 @@ const String kRead = 'Következő pont olvasása';
 const String kPoint = 'pont';
 const String kReadPoint = 'Pont beolvasása';
 const String kSubmit = 'Beküldés';
+const String kCancel = 'Mégse';
 
 const String kUsername = 'felhasználónév';
 const String kEmailAddress = 'email cím';
@@ -31,6 +32,10 @@ const String kSaveResultsSuccessTitle = 'Eredmények beküldése sikeres!';
 const String kSaveResultsSuccessMsg = 'Az eredményeid mentésre kerültek';
 const String kScanned = 'Beolvasva';
 const String kReadTheCode =  'Olvasd be a kódot';
+
+// Warning messages
+const String kWarningTitle = 'Figyelem!';
+const String kTrackNotCompletedWarning = 'Még nem olvastad be a pálya összes pontját. Biztosan beküldöd az eredményeid?';
 
 // Error messages
 const String kError = 'Hiba történt!';
