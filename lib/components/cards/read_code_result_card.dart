@@ -22,7 +22,7 @@ class ReadCodeResultCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            isScanned ? Text('${index + 1}. $kPoint   -   Beolvasva') : Text('${index + 1}. $kPoint   -   Olvasd be a kódot!'),
+            isScanned ? Text('${index + 1}. $kPoint   -   $kScanned') : Text('${index + 1}. $kPoint   -   $kReadTheCode!'),
             isScanned ? const Icon(Icons.check_circle, color: Colors.green,) : const Icon(Icons.qr_code),
           ],
         ),

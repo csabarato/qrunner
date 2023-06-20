@@ -29,6 +29,8 @@ const String kRegistrationSuccessTitle = 'Sikeres regisztráció!';
 const String kRegistrationSuccessMsg = 'Erősítsd meg az email címed, kattints a hivatkozásra a bejövő emailek között.';
 const String kSaveResultsSuccessTitle = 'Eredmények beküldése sikeres!';
 const String kSaveResultsSuccessMsg = 'Az eredményeid mentésre kerültek';
+const String kScanned = 'Beolvasva';
+const String kReadTheCode =  'Olvasd be a kódot';
 
 // Error messages
 const String kError = 'Hiba történt!';

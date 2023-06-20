@@ -52,7 +52,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
                     MaterialPageRoute(builder: (BuildContext context) {
                   return const QRCodeReaderScreen();
                 })).then((value) => {
-                      onCodeScanned(value, DateTime.now()),
+                      onCodeScanned(context, value, DateTime.now()),
                       setState(() {}),
                     });
               },
@@ -67,7 +67,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
                 );
               },
               shrinkWrap: true,
-              itemCount: 14,
+              itemCount: widget.numOfPoints,
             ),
           ),
           Padding(
@@ -106,15 +106,15 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     return resultBarcodeMap.length < widget.numOfPoints;
   }
 
-  void onCodeScanned(String value, DateTime scanTimestamp) {
+  void onCodeScanned(BuildContext context, String value, DateTime scanTimestamp) {
     if (widget.trackType == TrackType.fixedOrderCollecting) {
-      validateCodeFixedOrderType(value, scanTimestamp);
+      validateCodeFixedOrderType(context, value, scanTimestamp);
     } else {
-      validateCodePointCollectingType(value, scanTimestamp);
+      validateCodePointCollectingType(context, value, scanTimestamp);
     }
   }
 
-  void validateCodeFixedOrderType(String value, DateTime scanTimestamp) {
+  void validateCodeFixedOrderType(BuildContext context, String value, DateTime scanTimestamp) {
     int nextPointIndex = resultBarcodeMap.length;
 
     if (widget.codeList[nextPointIndex] != value) {
@@ -125,7 +125,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     }
   }
 
-  void validateCodePointCollectingType(String value, DateTime scanTimestamp) {
+  void validateCodePointCollectingType(BuildContext context, String value, DateTime scanTimestamp) {
     if (!widget.codeList.contains(value)) {
       showErrorDialog(context, kErrorScannedCodeNotPresent,
           title: kCodeReadError);
