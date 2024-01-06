@@ -29,7 +29,7 @@ class RoundedButton extends StatelessWidget {
         style: style,
         child: Text(
           text,
-          style: GoogleFonts.lexendDeca(fontSize: 15.0),
+          style: GoogleFonts.lexendDeca(fontSize: 15.0, color: Colors.white),
         ),
       ),
     );
