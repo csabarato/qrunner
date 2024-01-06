@@ -97,7 +97,8 @@ class _TracksScreenState extends State<TracksScreen> {
               trackId: model.id,
               trackType: model.trackType,
               numOfPoints: model.numOfPoints,
-              codeList: model.codeList);
+              codeList: model.codeList,
+              currentUser: FirebaseAuth.instance.currentUser);
         }));
       },
     );

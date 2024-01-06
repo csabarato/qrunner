@@ -17,13 +17,16 @@ class ReadCodesScreen extends StatefulWidget {
       required this.trackId,
       required this.trackType,
       required this.numOfPoints,
-      required this.codeList})
+      required this.codeList,
+      required this.currentUser,
+      })
       : super(key: key);
 
   final String trackId;
   final TrackType trackType;
   final int numOfPoints;
   final List<String> codeList;
+  final User? currentUser;
 
   @override
   State<ReadCodesScreen> createState() => ReadCodesScreenState();
@@ -31,6 +34,17 @@ class ReadCodesScreen extends StatefulWidget {
 
 class ReadCodesScreenState extends State<ReadCodesScreen> {
   Map<int, CodeScanData> resultBarcodeMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    ResultService.readScannedCodes(widget.trackId)
+        .then((value) {
+          resultBarcodeMap = value;
+          print(resultBarcodeMap);
+          setState(() {});
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +90,8 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
                 text: kSubmit,
                 onTap: () async {
                   if (resultBarcodeMap.length < widget.numOfPoints) {
-                    showConfirmDialog(context, kWarningTitle, kTrackNotCompletedWarning, () {
+                    showConfirmDialog(
+                        context, kWarningTitle, kTrackNotCompletedWarning, () {
                       saveResults();
                     });
                   } else {
@@ -91,11 +106,9 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
 
   saveResults() async {
     try {
-      final resultModel = ResultModel(
-          FirebaseAuth.instance.currentUser!.uid,
-          widget.trackId,
-          resultBarcodeMap);
-      
+      final resultModel = ResultModel(widget.currentUser!.uid,
+          widget.trackId, resultBarcodeMap);
+
       await ResultService.saveResult(resultModel);
       handleResultSavingSuccess();
     } catch (e) {
@@ -113,41 +126,55 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     return resultBarcodeMap.length < widget.numOfPoints;
   }
 
-  void onCodeScanned(BuildContext context, String value, DateTime scanTimestamp) {
+  void onCodeScanned(
+      BuildContext context, String code, DateTime scanTimestamp) {
+    int indexOfCode = getIndexOfCode(code);
     if (widget.trackType == TrackType.fixedOrderCollecting) {
-      validateCodeFixedOrderType(context, value, scanTimestamp);
+      validateCodeFixedOrderType(context, code, indexOfCode, scanTimestamp);
     } else {
-      validateCodePointCollectingType(context, value, scanTimestamp);
+      validateCodePointCollectingType(context, code, indexOfCode, scanTimestamp);
     }
   }
 
-  void validateCodeFixedOrderType(BuildContext context, String value, DateTime scanTimestamp) {
-    int nextPointIndex = resultBarcodeMap.length;
+  int getIndexOfCode(String code) {
+    if (widget.trackType == TrackType.fixedOrderCollecting) {
+      return resultBarcodeMap.length;
+    } else {
+      return widget.codeList.indexOf(code);
+    }
+  }
 
-    if (widget.codeList[nextPointIndex] != value) {
+  void validateCodeFixedOrderType(
+      BuildContext context, String value, int index, DateTime scanTimestamp) {
+    if (widget.codeList[index] != value) {
       showErrorDialog(context, kErrorScannedCodeIsNotTheNext,
           title: kCodeReadError);
     } else {
-      resultBarcodeMap[nextPointIndex] = CodeScanData(value, scanTimestamp);
+      resultBarcodeMap[index] = CodeScanData(value, scanTimestamp);
+      ResultService.saveCodeScanToLocalDb(widget.currentUser!.uid,
+          widget.trackId,value,index, scanTimestamp);
     }
   }
 
-  void validateCodePointCollectingType(BuildContext context, String value, DateTime scanTimestamp) {
+  void validateCodePointCollectingType(
+      BuildContext context, String value, int index, DateTime scanTimestamp) {
     if (!widget.codeList.contains(value)) {
       showErrorDialog(context, kErrorScannedCodeNotPresent,
           title: kCodeReadError);
       return;
     }
-    int indexOfCode = widget.codeList.indexOf(value);
-    if (resultBarcodeMap[indexOfCode] != null) {
+    if (resultBarcodeMap[index] != null) {
       showErrorDialog(context, kErrorCodeAlreadyScanned, title: kCodeReadError);
       return;
     }
-    resultBarcodeMap[indexOfCode] = CodeScanData(value, scanTimestamp);
+    resultBarcodeMap[index] = CodeScanData(value, scanTimestamp);
+    ResultService.saveCodeScanToLocalDb(widget.currentUser!.uid,
+        widget.trackId,value,index, scanTimestamp);
   }
 
   void handleResultSavingSuccess() {
-    showInfoDialog(context, kSaveResultsSuccessTitle , kSaveResultsSuccessTitle, () {
+    showInfoDialog(context, kSaveResultsSuccessTitle, kSaveResultsSuccessTitle,
+        () {
       Navigator.popUntil(context, (route) => route.isFirst);
     });
   }
