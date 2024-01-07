@@ -32,10 +32,12 @@ const String kSaveResultsSuccessTitle = 'Eredmények beküldése sikeres!';
 const String kSaveResultsSuccessMsg = 'Az eredményeid mentésre kerültek';
 const String kScanned = 'Beolvasva';
 const String kReadTheCode =  'Olvasd be a kódot';
+const String kOfflineSavingInfo = 'Az adatokat nem sikerült beküldeni, nincs adatkapcsolat. Próbáld meg később! \n A beolvasott pontjaid offline mentésre kerültek.';
 
 // Warning messages
 const String kWarningTitle = 'Figyelem!';
 const String kTrackNotCompletedWarning = 'Még nem olvastad be a pálya összes pontját. Biztosan beküldöd az eredményeid?';
+const String kNoInternetConnection = 'Nincs internetkapcsolat!';
 
 // Error messages
 const String kError = 'Hiba történt!';

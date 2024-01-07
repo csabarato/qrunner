@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qrunner/components/buttons/rounded_button.dart';
@@ -34,6 +37,8 @@ class ReadCodesScreen extends StatefulWidget {
 
 class ReadCodesScreenState extends State<ReadCodesScreen> {
   Map<int, CodeScanData> resultBarcodeMap = {};
+  ConnectivityResult connectivityResult = ConnectivityResult.none;
+  StreamSubscription? subscription;
 
   @override
   void initState() {
@@ -41,9 +46,12 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     ResultService.readScannedCodes(widget.trackId)
         .then((value) {
           resultBarcodeMap = value;
-          print(resultBarcodeMap);
           setState(() {});
         });
+
+    subscription = Connectivity().onConnectivityChanged.listen((result) {
+      connectivityResult = result;
+    });
   }
 
   @override
@@ -92,6 +100,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
                   if (resultBarcodeMap.length < widget.numOfPoints) {
                     showConfirmDialog(
                         context, kWarningTitle, kTrackNotCompletedWarning, () {
+                      Navigator.pop(context);
                       saveResults();
                     });
                   } else {
@@ -104,7 +113,20 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
     );
   }
 
+
+  @override
+  void dispose() {
+    if (subscription != null) subscription!.cancel();
+    super.dispose();
+  }
+
   saveResults() async {
+    if (connectivityResult != ConnectivityResult.wifi && connectivityResult != ConnectivityResult.mobile) {
+      showInfoDialog(context, kNoInternetConnection, kOfflineSavingInfo, () {
+            Navigator.pop(context);
+          });
+      return;
+    }
     try {
       final resultModel = ResultModel(widget.currentUser!.uid,
           widget.trackId, resultBarcodeMap);

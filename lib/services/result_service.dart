@@ -36,8 +36,6 @@ class ResultService {
     Map<int, CodeScanData> barcodeMap = {};
     List<Map<String, Object?>> scannedCodes = await dbRepository.readDataScannedCodesByTrackId(trackId);
     for(Map<String,Object?> scannedCode in scannedCodes) {
-      print('scanned code:');
-      print(scannedCode.toString());
       int pointIndex = scannedCode['pointIndex'] as int;
       String codeText = scannedCode['code'] as String;
       String scanTimestamp = scannedCode['scanTimestamp'] as String;
