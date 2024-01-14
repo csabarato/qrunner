@@ -9,6 +9,7 @@ import 'package:qrunner/constants/strings.dart';
 import 'package:qrunner/models/result_model.dart';
 import 'package:qrunner/models/track_type.dart';
 import 'package:qrunner/services/result_service.dart';
+import 'package:qrunner/services/track_service.dart';
 import 'package:qrunner/utils/dialog_utils.dart';
 
 import '../../models/code_scan_data.dart';
@@ -132,6 +133,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           widget.trackId, resultBarcodeMap);
 
       await ResultService.saveResult(resultModel);
+      await TrackService.addUserToCompletedBy(widget.trackId, widget.currentUser!.uid);
       handleResultSavingSuccess();
     } catch (e) {
       showInfoDialog(context, kError, e.toString(), () {

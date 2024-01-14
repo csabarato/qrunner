@@ -33,6 +33,7 @@ const String kSaveResultsSuccessMsg = 'Az eredményeid mentésre kerültek';
 const String kScanned = 'Beolvasva';
 const String kReadTheCode =  'Olvasd be a kódot';
 const String kOfflineSavingInfo = 'Az adatokat nem sikerült beküldeni, nincs adatkapcsolat. Próbáld meg később! \n A beolvasott pontjaid offline mentésre kerültek.';
+const String kTrackDone = 'TELJESÍTVE';
 
 // Warning messages
 const String kWarningTitle = 'Figyelem!';

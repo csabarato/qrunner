@@ -42,19 +42,20 @@ void main() async {
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
     final state = widget.createElement().state as ReadCodesScreenState;
 
-    await tester.pumpWidget(testWidget);
-    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
 
-    state.validateCodeFixedOrderType(key.currentContext!, 'a', 0, DateTime.now());
+      await tester.pumpWidget(testWidget);
 
-    assert(state.isCodeScanned(0));
-    expect(1, state.resultBarcodeMap.length);
+      state.validateCodeFixedOrderType(key.currentContext!, 'a', 0, DateTime.now());
+      assert(state.isCodeScanned(0));
+      expect(1, state.resultBarcodeMap.length);
 
-    // TODO: Fix this assertion
-    //expect(find.textContaining(kReadTheCode), findsNWidgets(3));
-    //expect(find.textContaining(kScanned), findsOneWidget);
-
+      // TODO: Fix this assertion
+      //expect(find.textContaining(kReadTheCode), findsNWidgets(3));
+      //expect(find.textContaining(kScanned), findsOneWidget);
+    });
   });
+
 
   testWidgets('Test Validate fixed order collecting, and code is not valid', (WidgetTester tester) async {
 
@@ -70,21 +71,22 @@ void main() async {
 
     final state = widget.createElement().state as ReadCodesScreenState;
 
-    await tester.pumpWidget(testWidget);
+    await tester.runAsync(() async {
+      await tester.pumpWidget(testWidget);
 
-    state.validateCodeFixedOrderType(key.currentContext! ,'b',0,DateTime.now());
-    await tester.pumpWidget(testWidget);
+      state.validateCodeFixedOrderType(key.currentContext! ,'b',0,DateTime.now());
+      await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.text(kErrorScannedCodeIsNotTheNext), findsOneWidget);
-    expect(find.text(kCodeReadError), findsOneWidget);
-    expect(0, state.resultBarcodeMap.length);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text(kErrorScannedCodeIsNotTheNext), findsOneWidget);
+      expect(find.text(kCodeReadError), findsOneWidget);
+      expect(0, state.resultBarcodeMap.length);
+    });
   });
 
   testWidgets('Test Validate point collecting, and code is valid', (tester) async {
     final key = GlobalKey<State>();
 
-    //await database.rawDelete("DELETE FROM CODE_SCAN_DATA");
     final widget = ReadCodesScreen(
         key: key,
         trackId: '3',
@@ -95,17 +97,16 @@ void main() async {
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
     final state = widget.createElement().state as ReadCodesScreenState;
 
-    await tester.pumpWidget(testWidget);
-    state.validateCodePointCollectingType(key.currentContext!,'c', 2, DateTime.now());
+    await tester.runAsync(() async {
+      await tester.pumpWidget(testWidget);
+      state.validateCodePointCollectingType(key.currentContext!,'c', 2, DateTime.now());
+      expect(1, state.resultBarcodeMap.length);
+    });
 
-    await tester.pumpWidget(testWidget);
-
-    expect(1, state.resultBarcodeMap.length);
   });
 
   testWidgets('Test Validate point collecting, and code is not present in codeList', (tester) async {
     final key = GlobalKey<State>();
-    //await database.rawDelete("DELETE FROM CODE_SCAN_DATA");
     final widget = ReadCodesScreen(
         key: key,
         trackId: '4',
@@ -116,15 +117,16 @@ void main() async {
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
     final state = widget.createElement().state as ReadCodesScreenState;
 
-    await tester.pumpWidget(testWidget);
-    state.validateCodePointCollectingType(key.currentContext!,'q', -1, DateTime.now());
+    await tester.runAsync(() async {
+      await tester.pumpWidget(testWidget);
+      state.validateCodePointCollectingType(key.currentContext!,'q', -1, DateTime.now());
+      await tester.pumpAndSettle();
 
-    await tester.pumpWidget(testWidget);
-
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.text(kErrorScannedCodeNotPresent), findsOneWidget);
-    expect(find.text(kCodeReadError), findsOneWidget);
-    expect(0, state.resultBarcodeMap.length);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text(kErrorScannedCodeNotPresent), findsOneWidget);
+      expect(find.text(kCodeReadError), findsOneWidget);
+      expect(0, state.resultBarcodeMap.length);
+    });
   });
 
   testWidgets('Test Validate point collecting, and code is already scanned', (tester) async {
@@ -139,23 +141,23 @@ void main() async {
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
     final state = widget.createElement().state as ReadCodesScreenState;
 
-    await mockSignInUser();
-    await tester.pumpWidget(testWidget);
+    await tester.runAsync(() async {
+      await tester.pumpWidget(testWidget);
 
-    state.validateCodePointCollectingType(key.currentContext!,'a',0 , DateTime.now());
-    expect(1, state.resultBarcodeMap.length);
-    expect(find.byType(AlertDialog), findsNothing);
+      state.validateCodePointCollectingType(key.currentContext!,'a',0 , DateTime.now());
+      expect(1, state.resultBarcodeMap.length);
+      expect(find.byType(AlertDialog), findsNothing);
 
-    state.validateCodePointCollectingType(key.currentContext!,'a',0,DateTime.now());
+      state.validateCodePointCollectingType(key.currentContext!,'a',0,DateTime.now());
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    expect(1, state.resultBarcodeMap.length);
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.text(kCodeReadError), findsOneWidget);
-    expect(find.text(kErrorCodeAlreadyScanned), findsOneWidget);
+      expect(1, state.resultBarcodeMap.length);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text(kCodeReadError), findsOneWidget);
+      expect(find.text(kErrorCodeAlreadyScanned), findsOneWidget);
+    });
   });
-
 
   test('Mock signed-in currentUser', () async {
 
@@ -187,6 +189,38 @@ void main() async {
     // Perform assertions on the current user
     expect(currentUser, isNotNull);
   });
+
+  /*
+  testWidgets('Test draw ReadCodesScreen if 1 code is read', (tester) async {
+    final key = GlobalKey<State>();
+
+    var resultBarcodeMap = <int, CodeScanData>{};
+    resultBarcodeMap.putIfAbsent(0, () => CodeScanData('a',DateTime.now()));
+
+    when(ResultService.readScannedCodes('1')).thenAnswer((_) => Future.value(resultBarcodeMap));
+
+    final widget = ReadCodesScreen(
+      key: key,
+      trackId: '1',
+      trackType: TrackType.fixedOrderCollecting,numOfPoints: 4,
+      codeList: const ['a', 'b', 'c', 'd'],
+      currentUser: currentUser,);
+
+    Widget testWidget = MediaQuery(
+        data: const MediaQueryData(), child: MaterialApp(home: widget,));
+    final state = widget.createElement().state as ReadCodesScreenState;
+
+    await tester.runAsync(() async {
+      await tester.pumpWidget(testWidget);
+
+      assert(state.isCodeScanned(0));
+      expect(1, state.resultBarcodeMap.length);
+      expect(find.textContaining(kReadTheCode), findsNWidgets(3));
+      expect(find.textContaining(kScanned), findsOneWidget);
+    });
+  });
+*/
+
 }
 
 Future<User> mockSignInUser() async {

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrunner/constants/strings.dart';
@@ -9,12 +10,13 @@ class TrackCard extends StatelessWidget {
   final TrackModel trackModel;
   final VoidCallback onTap;
 
-  const TrackCard({Key? key, required this.trackModel, required this.onTap}) : super(key: key);
+  const TrackCard({Key? key, required this.trackModel, required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isCompletedByUser() ? null : onTap,
       child: Card(
           elevation: 05.0,
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -26,11 +28,19 @@ class TrackCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(trackModel.name,
-                    style: GoogleFonts.lexendDeca(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                    )),
+                Row(
+                  children: [
+                    Text(trackModel.name,
+                        style: GoogleFonts.lexendDeca(
+                          color: Colors.black,
+                          fontSize: 18.0,
+                        )),
+                    const SizedBox(width: 15.0,),
+                    if (isCompletedByUser()) Text(kTrackDone, style:
+                      GoogleFonts.lexendDeca(color: Colors.green, fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
                 const Divider(
                   thickness: 2.0,
                   color: Colors.blueGrey,
@@ -45,7 +55,9 @@ class TrackCard extends StatelessWidget {
                 const SizedBox(
                   height: 6.0,
                 ),
-                Text(kDateTime + DateFormatUtils.getDateTime(trackModel.dateTime),
+                Text(
+                    kDateTime +
+                        DateFormatUtils.getDateTime(trackModel.dateTime),
                     style: const TextStyle(fontSize: 16.0)),
                 const SizedBox(
                   height: 6.0,
@@ -56,5 +68,9 @@ class TrackCard extends StatelessWidget {
             ),
           )),
     );
+  }
+
+  bool isCompletedByUser() {
+    return trackModel.completedBy.contains(FirebaseAuth.instance.currentUser!.uid);
   }
 }

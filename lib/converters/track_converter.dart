@@ -9,6 +9,9 @@ class TrackConverter {
     List<String> codeList =
         (doc["codeList"] as List<dynamic>).map((e) => e as String).toList();
 
+    List<String> completedByUsersList =
+    (doc["completedBy"] as List<dynamic>).map((e) => e as String).toList();
+
     return TrackModel(
       doc.id,
       doc["name"],
@@ -16,6 +19,7 @@ class TrackConverter {
       timestamp.toDate(),
       doc["numOfPoints"],
       codeList,
+      completedByUsersList,
     );
   }
 }
