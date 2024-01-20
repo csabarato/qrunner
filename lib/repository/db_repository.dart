@@ -20,6 +20,26 @@ class DbRepository {
         return await connection.insert(table, data);
     }
 
+    refreshTableData(String table, List<Map<String, dynamic>> dataList) async {
+      final connection = await database;
+
+      var tableExists =
+        Sqflite.firstIntValue(
+            await connection.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = '$table'"));
+
+      Batch batch = connection.batch();
+      if (tableExists == 1) batch.delete(table);
+      for (var data in dataList) {
+        batch.insert(table, data);
+      }
+      return await batch.commit();
+    }
+
+    Future<List<Map<String, Object?>>> queryTableData(String table) async {
+      final connection = await database;
+      return await connection.query(table);
+    }
+
     Future<List<Map<String, Object?>>> readDataScannedCodesByTrackId(String trackId) async {
       final connection = await database;
       return await

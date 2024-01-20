@@ -28,19 +28,22 @@ class TrackCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(trackModel.name,
-                        style: GoogleFonts.lexendDeca(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                        )),
-                    const SizedBox(width: 15.0,),
-                    if (isCompletedByUser()) Text(kTrackDone, style:
-                      GoogleFonts.lexendDeca(color: Colors.green, fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Text(trackModel.name,
+                    style: GoogleFonts.lexendDeca(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                    )),
+                const SizedBox(
+                  width: 15.0,
                 ),
+                if (isCompletedByUser())
+                  Text(
+                    kTrackDone,
+                    style: GoogleFonts.lexendDeca(
+                        color: Colors.green,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold),
+                  ),
                 const Divider(
                   thickness: 2.0,
                   color: Colors.blueGrey,
@@ -71,6 +74,7 @@ class TrackCard extends StatelessWidget {
   }
 
   bool isCompletedByUser() {
-    return trackModel.completedBy.contains(FirebaseAuth.instance.currentUser!.uid);
+    return trackModel.completedBy
+        .contains(FirebaseAuth.instance.currentUser!.uid);
   }
 }

@@ -48,6 +48,7 @@ const String kWrongPassword = 'Hibás jelszó';
 const String kEmailNotVerifiedMsg = 'Az email cím nincs megerősítve';
 const String kUserNotExists = 'Nincs regisztrált felhasználó ezzel az email címmel.';
 const String kGoogleSignInFailedMsg= "Google bejelentkezés nem sikerült";
+const String kLoadTracksFailed = "Az adatok betöltése nem sikerült. Ellenőrizd az internetkapcsolatot és próbálkozz később!";
 
 const String kCodeReadError = 'Hibás kódolvasás!';
 const String kErrorScannedCodeIsNotTheNext = 'A beolvasott kód nem a következő ponthoz tartozik!';

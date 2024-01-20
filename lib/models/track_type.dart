@@ -7,4 +7,8 @@ enum TrackType {
   final String name;
 
   const TrackType(this.name);
+
+  static TrackType getByName(String name) {
+    return name == kPointCollecting ? TrackType.pointCollecting : TrackType.fixedOrderCollecting;
+  }
 }

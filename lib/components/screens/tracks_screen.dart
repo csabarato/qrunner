@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,8 +26,10 @@ class TracksScreen extends StatefulWidget {
 }
 
 class _TracksScreenState extends State<TracksScreen> {
-
   List<TrackModel> tracks = [];
+  ConnectivityResult connectivityResult = ConnectivityResult.none;
+
+  StreamSubscription? connectivityChangedSubscription;
   late StreamSubscription<QuerySnapshot> tracksSubscription;
 
   bool isLoading = true;
@@ -34,7 +37,19 @@ class _TracksScreenState extends State<TracksScreen> {
   @override
   void initState() {
     super.initState();
-    subscribeToTracksStream();
+
+    Connectivity().checkConnectivity().
+        then((result) {
+          if (result != ConnectivityResult.wifi || result != ConnectivityResult.mobile) {
+            handleNoInternetConnection();
+          }
+        });
+
+    connectivityChangedSubscription =
+        Connectivity().onConnectivityChanged.listen((result) {
+          onConnectivityChanged(result);
+    });
+
   }
 
   @override
@@ -59,13 +74,24 @@ class _TracksScreenState extends State<TracksScreen> {
                   }
                 }),
           ),
-          RoundedButton(text: 'Logout', onTap: () {
-            FirebaseAuth.instance.signOut();
-            Navigator.pushReplacementNamed(context, HomeScreen.id);
-          })
+          RoundedButton(
+              text: 'Logout',
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, HomeScreen.id);
+              })
         ],
       ),
     );
+  }
+
+  onConnectivityChanged(ConnectivityResult result) {
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      subscribeToTracksStream();
+    } else {
+      handleNoInternetConnection();
+    }
   }
 
   subscribeToTracksStream() {
@@ -76,6 +102,7 @@ class _TracksScreenState extends State<TracksScreen> {
       tracksSubscription = tracksStream.listen((event) {
         tracks =
             event.docs.map((e) => TrackConverter.convertToModel(e)).toList();
+        TrackService.refreshTracksDataInLocalDb(tracks);
         EasyLoading.dismiss();
         isLoading = false;
         setState(() {});
@@ -83,6 +110,21 @@ class _TracksScreenState extends State<TracksScreen> {
     } catch (e) {
       showErrorDialog(context, e.toString());
     }
+  }
+
+  handleNoInternetConnection() {
+    TrackService.loadTracksDataFromLocalDb()
+        .then<void>((tracksData) {
+      tracks = tracksData;
+      EasyLoading.dismiss();
+      isLoading = false;
+    })
+        .catchError((e, stackTrace) {
+      EasyLoading.dismiss();
+      isLoading = false;
+      print(stackTrace);
+      showErrorDialog(context, kLoadTracksFailed);
+    });
   }
 
   TrackCard buildTrackCard(int index) {
@@ -108,5 +150,6 @@ class _TracksScreenState extends State<TracksScreen> {
   void dispose() {
     super.dispose();
     tracksSubscription.cancel();
+    if (connectivityChangedSubscription != null) connectivityChangedSubscription!.cancel();
   }
 }
