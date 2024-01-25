@@ -42,7 +42,7 @@ class TrackConverter {
     var codeList =
     (jsonDecode(data["codeList"]) as List<dynamic>).map((e) => e as String).toList();
     var completedByList =
-    (jsonDecode(data["completedBy"]) as List<dynamic>).map((e) => e as String).toList() ;
+    (jsonDecode(data["completedBy"]) as List<dynamic>).map((e) => e as String).toList();
 
     return TrackModel(
       data["id"], data["name"], TrackType.getByName(data["trackType"]),DateTime.parse(data["dateTime"]),

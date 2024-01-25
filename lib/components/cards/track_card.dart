@@ -16,7 +16,7 @@ class TrackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isCompletedByUser() ? null : onTap,
+      onTap: onTap,
       child: Card(
           elevation: 05.0,
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

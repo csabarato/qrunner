@@ -50,6 +50,9 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           setState(() {});
         });
 
+    Connectivity().checkConnectivity().
+      then((result) => connectivityResult = result);
+
     subscription = Connectivity().onConnectivityChanged.listen((result) {
       connectivityResult = result;
     });

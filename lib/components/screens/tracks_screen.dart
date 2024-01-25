@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:qrunner/components/buttons/rounded_button.dart';
@@ -38,18 +39,17 @@ class _TracksScreenState extends State<TracksScreen> {
   void initState() {
     super.initState();
 
-    Connectivity().checkConnectivity().
-        then((result) {
-          if (result != ConnectivityResult.wifi || result != ConnectivityResult.mobile) {
-            handleNoInternetConnection();
-          }
-        });
+    Connectivity().checkConnectivity().then((result) {
+      if (result != ConnectivityResult.wifi &&
+          result != ConnectivityResult.mobile) {
+        handleNoInternetConnection();
+      }
+    });
 
     connectivityChangedSubscription =
         Connectivity().onConnectivityChanged.listen((result) {
-          onConnectivityChanged(result);
+      onConnectivityChanged(result);
     });
-
   }
 
   @override
@@ -74,12 +74,13 @@ class _TracksScreenState extends State<TracksScreen> {
                   }
                 }),
           ),
+          const Spacer(),
           RoundedButton(
-              text: 'Logout',
+              text: kLogout,
               onTap: () {
                 FirebaseAuth.instance.signOut();
                 Navigator.pushReplacementNamed(context, HomeScreen.id);
-              })
+              }),
         ],
       ),
     );
@@ -113,16 +114,14 @@ class _TracksScreenState extends State<TracksScreen> {
   }
 
   handleNoInternetConnection() {
-    TrackService.loadTracksDataFromLocalDb()
-        .then<void>((tracksData) {
+    TrackService.loadTracksDataFromLocalDb().then<void>((tracksData) {
       tracks = tracksData;
       EasyLoading.dismiss();
       isLoading = false;
-    })
-        .catchError((e, stackTrace) {
+      setState(() {});
+    }).catchError((e, stackTrace) {
       EasyLoading.dismiss();
       isLoading = false;
-      print(stackTrace);
       showErrorDialog(context, kLoadTracksFailed);
     });
   }
@@ -150,6 +149,7 @@ class _TracksScreenState extends State<TracksScreen> {
   void dispose() {
     super.dispose();
     tracksSubscription.cancel();
-    if (connectivityChangedSubscription != null) connectivityChangedSubscription!.cancel();
+    if (connectivityChangedSubscription != null)
+      connectivityChangedSubscription!.cancel();
   }
 }

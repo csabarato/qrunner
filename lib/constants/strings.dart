@@ -12,6 +12,7 @@ const String kCancel = 'Mégse';
 const String kUsername = 'felhasználónév';
 const String kEmailAddress = 'email cím';
 const String kPassword = 'jelszó';
+const String kLogout = 'Kijelentkezés';
 
 // Screen titles
 const String kReadCodesTitle = 'Pontok beolvasása';
