@@ -21,6 +21,10 @@ class TrackCard extends StatelessWidget {
           elevation: 05.0,
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: isCompletedByUser() ? Colors.green : Colors.blueGrey,
+              width: 3.0
+            ),
             borderRadius: BorderRadius.circular(4.0),
           ),
           child: Padding(
