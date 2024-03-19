@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qrunner/models/code_scan_data.dart';
-import 'package:qrunner/models/result_model.dart';
 
 import '../repository/db_repository.dart';
 
 class ResultService {
-
-  static final FirebaseFirestore db = FirebaseFirestore.instance;
 
   static late DbRepository dbRepository;
 
@@ -14,15 +10,10 @@ class ResultService {
     dbRepository = DbRepository();
   }
 
-  static Future<void> saveResult(ResultModel model) async {
-    await db.collection("results").add(model.toJson());
-  }
-
-  static void saveCodeScanToLocalDb(String userId, String trackId, String code,
+  static void saveCodeScanToLocalDb(String trackId, String code,
       int index, DateTime timestamp) async {
     dbRepository = DbRepository();
     Map<String, dynamic> data = {};
-    data['userId'] = userId;
     data['trackId'] = trackId;
     data['pointIndex'] = index;
     data['code'] = code;
@@ -43,5 +34,10 @@ class ResultService {
       barcodeMap[pointIndex] = codeScanData;
     }
     return barcodeMap;
+  }
+
+  static Future<int> deleteCodeScanData() async {
+    dbRepository = DbRepository();
+    return dbRepository.deleteData('CODE_SCAN_DATA');
   }
 }

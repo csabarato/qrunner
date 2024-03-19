@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrunner/constants/strings.dart';
-import 'package:qrunner/utils/date_format_utils.dart';
 
 import '../../models/track_model.dart';
 
@@ -22,7 +20,7 @@ class TrackCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: isCompletedByUser() ? Colors.green : Colors.blueGrey,
+              color: Colors.blueGrey,
               width: 3.0
             ),
             borderRadius: BorderRadius.circular(4.0),
@@ -40,14 +38,6 @@ class TrackCard extends StatelessWidget {
                 const SizedBox(
                   width: 15.0,
                 ),
-                if (isCompletedByUser())
-                  Text(
-                    kTrackDone,
-                    style: GoogleFonts.lexendDeca(
-                        color: Colors.green,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold),
-                  ),
                 const Divider(
                   thickness: 2.0,
                   color: Colors.blueGrey,
@@ -62,10 +52,6 @@ class TrackCard extends StatelessWidget {
                 const SizedBox(
                   height: 6.0,
                 ),
-                Text(
-                    kDateTime +
-                        DateFormatUtils.getDateTime(trackModel.dateTime),
-                    style: const TextStyle(fontSize: 16.0)),
                 const SizedBox(
                   height: 6.0,
                 ),
@@ -75,10 +61,5 @@ class TrackCard extends StatelessWidget {
             ),
           )),
     );
-  }
-
-  bool isCompletedByUser() {
-    return trackModel.completedBy
-        .contains(FirebaseAuth.instance.currentUser!.uid);
   }
 }

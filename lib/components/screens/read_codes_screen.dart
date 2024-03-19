@@ -1,36 +1,29 @@
-import 'dart:async';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qrunner/components/buttons/rounded_button.dart';
 import 'package:qrunner/components/screens/qr_code_reader_screen.dart';
 import 'package:qrunner/constants/strings.dart';
-import 'package:qrunner/models/result_model.dart';
 import 'package:qrunner/models/track_type.dart';
-import 'package:qrunner/services/result_service.dart';
-import 'package:qrunner/services/track_service.dart';
 import 'package:qrunner/utils/dialog_utils.dart';
 
 import '../../models/code_scan_data.dart';
+import '../../services/result_service.dart';
 import '../cards/read_code_result_card.dart';
 
 class ReadCodesScreen extends StatefulWidget {
-  const ReadCodesScreen(
-      {Key? key,
-      required this.trackId,
-      required this.trackType,
-      required this.numOfPoints,
-      required this.codeList,
-      required this.currentUser,
-      })
-      : super(key: key);
+  const ReadCodesScreen({
+    Key? key,
+    required this.trackId,
+    required this.trackName,
+    required this.trackType,
+    required this.numOfPoints,
+    required this.codeList,
+  }) : super(key: key);
 
   final String trackId;
+  final String trackName;
   final TrackType trackType;
   final int numOfPoints;
   final List<String> codeList;
-  final User? currentUser;
 
   @override
   State<ReadCodesScreen> createState() => ReadCodesScreenState();
@@ -38,23 +31,13 @@ class ReadCodesScreen extends StatefulWidget {
 
 class ReadCodesScreenState extends State<ReadCodesScreen> {
   Map<int, CodeScanData> resultBarcodeMap = {};
-  ConnectivityResult connectivityResult = ConnectivityResult.none;
-  StreamSubscription? subscription;
 
   @override
   void initState() {
     super.initState();
-    ResultService.readScannedCodes(widget.trackId)
-        .then((value) {
-          resultBarcodeMap = value;
-          setState(() {});
-        });
-
-    Connectivity().checkConnectivity().
-      then((result) => connectivityResult = result);
-
-    subscription = Connectivity().onConnectivityChanged.listen((result) {
-      connectivityResult = result;
+    ResultService.readScannedCodes(widget.trackId).then((value) {
+      resultBarcodeMap = value;
+      setState(() {});
     });
   }
 
@@ -62,7 +45,7 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(kReadCodesTitle),
+        title: Text(widget.trackName),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,10 +70,15 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           Expanded(
             child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                return ReadCodeResultCard(
-                  index: index,
-                  isScanned: isCodeScanned(index),
-                );
+                if (isCodeScanned(index)) {
+                  return ReadCodeResultCard(
+                    index: index,
+                    isScanned: isCodeScanned(index),
+                    codeScanData: resultBarcodeMap[index]!,
+                    startDateTime: resultBarcodeMap[0]!.scanTimestamp,
+                  );
+                }
+                return null;
               },
               shrinkWrap: true,
               itemCount: widget.numOfPoints,
@@ -99,50 +87,21 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: RoundedButton(
-                text: kSubmit,
-                onTap: () async {
-                  if (resultBarcodeMap.length < widget.numOfPoints) {
-                    showConfirmDialog(
-                        context, kWarningTitle, kTrackNotCompletedWarning, () {
-                      Navigator.pop(context);
-                      saveResults();
-                    });
-                  } else {
-                    saveResults();
-                  }
+                text: kDelete,
+                color: Colors.redAccent,
+                onTap: () {
+                  ResultService.deleteCodeScanData().then(
+                          (res) => {
+                            if (res > 0) {
+                              resultBarcodeMap.clear(),
+                              setState(() {})
+                            }
+                          });
                 }),
           )
         ],
       ),
     );
-  }
-
-
-  @override
-  void dispose() {
-    if (subscription != null) subscription!.cancel();
-    super.dispose();
-  }
-
-  saveResults() async {
-    if (connectivityResult != ConnectivityResult.wifi && connectivityResult != ConnectivityResult.mobile) {
-      showInfoDialog(context, kNoInternetConnection, kOfflineSavingInfo, () {
-            Navigator.pop(context);
-          });
-      return;
-    }
-    try {
-      final resultModel = ResultModel(widget.currentUser!.uid,
-          widget.trackId, resultBarcodeMap);
-
-      await ResultService.saveResult(resultModel);
-      await TrackService.addUserToCompletedBy(widget.trackId, widget.currentUser!.uid);
-      handleResultSavingSuccess();
-    } catch (e) {
-      showInfoDialog(context, kError, e.toString(), () {
-        Navigator.pop(context);
-      });
-    }
   }
 
   bool isCodeScanned(int index) {
@@ -155,20 +114,17 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
 
   void onCodeScanned(
       BuildContext context, String code, DateTime scanTimestamp) {
-    int indexOfCode = getIndexOfCode(code);
+    int indexOfCode = getNextIndexOfCode(code);
     if (widget.trackType == TrackType.fixedOrderCollecting) {
       validateCodeFixedOrderType(context, code, indexOfCode, scanTimestamp);
     } else {
-      validateCodePointCollectingType(context, code, indexOfCode, scanTimestamp);
+      validateCodePointCollectingType(
+          context, code, indexOfCode, scanTimestamp);
     }
   }
 
-  int getIndexOfCode(String code) {
-    if (widget.trackType == TrackType.fixedOrderCollecting) {
-      return resultBarcodeMap.length;
-    } else {
-      return widget.codeList.indexOf(code);
-    }
+  int getNextIndexOfCode(String code) {
+    return resultBarcodeMap.length;
   }
 
   void validateCodeFixedOrderType(
@@ -178,8 +134,8 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           title: kCodeReadError);
     } else {
       resultBarcodeMap[index] = CodeScanData(value, scanTimestamp);
-      ResultService.saveCodeScanToLocalDb(widget.currentUser!.uid,
-          widget.trackId,value,index, scanTimestamp);
+      ResultService.saveCodeScanToLocalDb(
+          widget.trackId, value, index, scanTimestamp);
     }
   }
 
@@ -190,19 +146,14 @@ class ReadCodesScreenState extends State<ReadCodesScreen> {
           title: kCodeReadError);
       return;
     }
-    if (resultBarcodeMap[index] != null) {
+
+    if (resultBarcodeMap.values.any((codeScan) => codeScan.code == value)) {
       showErrorDialog(context, kErrorCodeAlreadyScanned, title: kCodeReadError);
       return;
     }
-    resultBarcodeMap[index] = CodeScanData(value, scanTimestamp);
-    ResultService.saveCodeScanToLocalDb(widget.currentUser!.uid,
-        widget.trackId,value,index, scanTimestamp);
-  }
 
-  void handleResultSavingSuccess() {
-    showInfoDialog(context, kSaveResultsSuccessTitle, kSaveResultsSuccessTitle,
-        () {
-      Navigator.popUntil(context, (route) => route.isFirst);
-    });
+    resultBarcodeMap[index] = CodeScanData(value, scanTimestamp);
+    ResultService.saveCodeScanToLocalDb(
+        widget.trackId, value, index, scanTimestamp);
   }
 }

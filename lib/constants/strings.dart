@@ -6,7 +6,7 @@ const String kDone = 'Kész';
 const String kRead = 'Következő pont olvasása';
 const String kPoint = 'pont';
 const String kReadPoint = 'Pont beolvasása';
-const String kSubmit = 'Beküldés';
+const String kDelete = 'Törlés';
 const String kCancel = 'Mégse';
 
 const String kUsername = 'felhasználónév';

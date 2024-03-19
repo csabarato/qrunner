@@ -1,28 +1,22 @@
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qrunner/components/screens/read_codes_screen.dart';
 import 'package:qrunner/constants/strings.dart';
 import 'package:qrunner/models/track_type.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
 
 import 'firebase_mock.dart';
 
 void main() async {
   late Database database;
-  late User currentUser;
-  
-  setupFirebaseAuthMocks();
+
   setUpAll(() async => {
-    await Firebase.initializeApp(),
+
     sqfliteFfiInit(),
     databaseFactory = databaseFactoryFfi,
     database = await databaseFactory.openDatabase(inMemoryDatabasePath),
-    currentUser = await mockSignInUser()
   });
   
   tearDownAll(() async => {
@@ -34,9 +28,9 @@ void main() async {
     final widget = ReadCodesScreen(
         key: key,
         trackId: '1',
+        trackName: 'test1',
         trackType: TrackType.fixedOrderCollecting,numOfPoints: 4,
-        codeList: const ['a', 'b', 'c', 'd'],
-        currentUser: currentUser,);
+        codeList: const ['a', 'b', 'c', 'd'],);
 
     Widget testWidget = MediaQuery(
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
@@ -62,9 +56,8 @@ void main() async {
     final key = GlobalKey<State>();
     final widget = ReadCodesScreen(
          key: key,
-         trackId: '2', trackType: TrackType.fixedOrderCollecting,
-         numOfPoints: 4, codeList: const ['a', 'b', 'c'],
-         currentUser: currentUser,);
+         trackId: '2', trackName: 'test_2', trackType: TrackType.fixedOrderCollecting,
+         numOfPoints: 4, codeList: const ['a', 'b', 'c'],);
 
     Widget testWidget = MediaQuery(
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
@@ -90,8 +83,8 @@ void main() async {
     final widget = ReadCodesScreen(
         key: key,
         trackId: '3',
-        trackType: TrackType.fixedOrderCollecting,numOfPoints: 4, codeList: const ['a', 'b', 'c', 'd'],
-        currentUser: currentUser);
+        trackName: 'test_3',
+        trackType: TrackType.fixedOrderCollecting,numOfPoints: 4, codeList: const ['a', 'b', 'c', 'd'],);
 
     Widget testWidget = MediaQuery(
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
@@ -110,8 +103,8 @@ void main() async {
     final widget = ReadCodesScreen(
         key: key,
         trackId: '4',
-        trackType: TrackType.fixedOrderCollecting,numOfPoints: 4, codeList: const ['a', 'b', 'c', 'd'],
-        currentUser: currentUser);
+        trackName: 'test_4',
+        trackType: TrackType.fixedOrderCollecting,numOfPoints: 4, codeList: const ['a', 'b', 'c', 'd'],);
 
     Widget testWidget = MediaQuery(
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
@@ -134,8 +127,8 @@ void main() async {
     final widget = ReadCodesScreen(
         key: key,
         trackId: '5',
-        trackType: TrackType.fixedOrderCollecting,numOfPoints: 4, codeList: const ['a', 'b', 'c', 'd'],
-        currentUser: currentUser,);
+        trackName: 'test_5',
+        trackType: TrackType.fixedOrderCollecting,numOfPoints: 4, codeList: const ['a', 'b', 'c', 'd'],);
 
     Widget testWidget = MediaQuery(
         data: const MediaQueryData(), child: MaterialApp(home: widget,));
@@ -158,38 +151,6 @@ void main() async {
       expect(find.text(kErrorCodeAlreadyScanned), findsOneWidget);
     });
   });
-
-  test('Mock signed-in currentUser', () async {
-
-    // Mock sign in with Google.
-    final googleSignIn = MockGoogleSignIn();
-    final signinAccount = await googleSignIn.signIn();
-    final googleAuth = await signinAccount!.authentication;
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    // Create a mock FirebaseAuth instance
-
-    // Set up the mock signed-in user
-    final user = MockUser(
-      isAnonymous: false,
-      uid: 'test_user_id',
-      email: 'test@example.com',
-    );
-
-    final auth = MockFirebaseAuth(mockUser: user);
-    // Sign in the user
-    await auth.signInWithCredential(credential);
-
-    // Get the current user
-    User? currentUser = auth.currentUser;
-
-    // Perform assertions on the current user
-    expect(currentUser, isNotNull);
-  });
-
   /*
   testWidgets('Test draw ReadCodesScreen if 1 code is read', (tester) async {
     final key = GlobalKey<State>();
@@ -221,31 +182,4 @@ void main() async {
   });
 */
 
-}
-
-Future<User> mockSignInUser() async {
-  // Mock sign in with Google.
-  final googleSignIn = MockGoogleSignIn();
-  final signinAccount = await googleSignIn.signIn();
-  final googleAuth = await signinAccount!.authentication;
-  final AuthCredential credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth.accessToken,
-    idToken: googleAuth.idToken,
-  );
-
-  // Create a mock FirebaseAuth instance
-
-  // Set up the mock signed-in user
-  final user = MockUser(
-    isAnonymous: false,
-    uid: 'test_user_id',
-    email: 'test@example.com',
-  );
-
-  final auth = MockFirebaseAuth(mockUser: user);
-  // Sign in the user
-  await auth.signInWithCredential(credential);
-
-  // Get the current user
-  return Future.value(auth.currentUser);
 }

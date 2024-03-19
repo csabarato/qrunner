@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qrunner/constants/strings.dart';
+import 'package:qrunner/models/code_scan_data.dart';
+import 'package:qrunner/utils/date_format_utils.dart';
 
 class ReadCodeResultCard extends StatelessWidget {
   const ReadCodeResultCard(
-      {Key? key, required this.index, required this.isScanned})
+      {Key? key,
+      required this.index,
+      required this.isScanned,
+      required this.codeScanData,
+      required this.startDateTime})
       : super(key: key);
 
   final int index;
   final bool isScanned;
+  final CodeScanData codeScanData;
+  final DateTime startDateTime;
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +33,18 @@ class ReadCodeResultCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            isScanned
-                ? Text(
-                    '${index + 1}. $kPoint   -   $kScanned',
-                    style: const TextStyle(color: Colors.white),
-                  )
-                : Text('${index + 1}. $kPoint   -   $kReadTheCode!'),
-            isScanned
-                ? const Icon(
-                    Icons.check_circle,
-                    color: Colors.white,
-                  )
-                : const Icon(Icons.qr_code),
+            Text(
+              '${index + 1}. $kPoint   -   $kScanned',
+              style: const TextStyle(color: Colors.white),
+            ),
+            const Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+            Text(
+              codeScanData.scanTimestamp.difference(startDateTime).toString().split('.').first,
+              style: const TextStyle(color: Colors.white),
+            )
           ],
         ),
       ),

@@ -1,21 +1,10 @@
-import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:qrunner/components/buttons/rounded_button.dart';
 import 'package:qrunner/components/cards/track_card.dart';
-import 'package:qrunner/components/screens/home_screen.dart';
 import 'package:qrunner/components/screens/read_codes_screen.dart';
 import 'package:qrunner/constants/strings.dart';
-import 'package:qrunner/converters/track_converter.dart';
 import 'package:qrunner/models/track_model.dart';
-import 'package:qrunner/services/track_service.dart';
-import 'package:qrunner/utils/dialog_utils.dart';
-import 'package:qrunner/utils/progress_indicators.dart';
+import 'package:qrunner/models/track_type.dart';
 
 class TracksScreen extends StatefulWidget {
   const TracksScreen({Key? key}) : super(key: key);
@@ -28,28 +17,11 @@ class TracksScreen extends StatefulWidget {
 
 class _TracksScreenState extends State<TracksScreen> {
   List<TrackModel> tracks = [];
-  ConnectivityResult connectivityResult = ConnectivityResult.none;
-
-  StreamSubscription? connectivityChangedSubscription;
-  late StreamSubscription<QuerySnapshot> tracksSubscription;
-
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-
-    Connectivity().checkConnectivity().then((result) {
-      if (result != ConnectivityResult.wifi &&
-          result != ConnectivityResult.mobile) {
-        handleNoInternetConnection();
-      }
-    });
-
-    connectivityChangedSubscription =
-        Connectivity().onConnectivityChanged.listen((result) {
-      onConnectivityChanged(result);
-    });
+    tracks = createTrackModels();
   }
 
   @override
@@ -64,66 +36,14 @@ class _TracksScreenState extends State<TracksScreen> {
             child: ListView.builder(
                 shrinkWrap: true,
                 physics: const ClampingScrollPhysics(),
-                itemCount: isLoading ? 1 : tracks.length,
+                itemCount: tracks.length,
                 itemBuilder: (context, index) {
-                  if (isLoading) {
-                    showLoadingIndicator('Loading...');
-                    return const SizedBox();
-                  } else {
                     return buildTrackCard(index);
-                  }
-                }),
+                  }),
           ),
-          const Spacer(),
-          RoundedButton(
-              text: kLogout,
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.pushReplacementNamed(context, HomeScreen.id);
-              }),
         ],
       ),
     );
-  }
-
-  onConnectivityChanged(ConnectivityResult result) {
-    if (result == ConnectivityResult.mobile ||
-        result == ConnectivityResult.wifi) {
-      subscribeToTracksStream();
-    } else {
-      handleNoInternetConnection();
-    }
-  }
-
-  subscribeToTracksStream() {
-    try {
-      Stream<QuerySnapshot> tracksStream =
-          TrackService.getTracksQuerySnapshots();
-
-      tracksSubscription = tracksStream.listen((event) {
-        tracks =
-            event.docs.map((e) => TrackConverter.convertToModel(e)).toList();
-        TrackService.refreshTracksDataInLocalDb(tracks);
-        EasyLoading.dismiss();
-        isLoading = false;
-        setState(() {});
-      });
-    } catch (e) {
-      showErrorDialog(context, e.toString());
-    }
-  }
-
-  handleNoInternetConnection() {
-    TrackService.loadTracksDataFromLocalDb().then<void>((tracksData) {
-      tracks = tracksData;
-      EasyLoading.dismiss();
-      isLoading = false;
-      setState(() {});
-    }).catchError((e, stackTrace) {
-      EasyLoading.dismiss();
-      isLoading = false;
-      showErrorDialog(context, kLoadTracksFailed);
-    });
   }
 
   TrackCard buildTrackCard(int index) {
@@ -136,20 +56,31 @@ class _TracksScreenState extends State<TracksScreen> {
             MaterialPageRoute(builder: (BuildContext context) {
           return ReadCodesScreen(
               trackId: model.id,
+              trackName: model.name,
               trackType: model.trackType,
               numOfPoints: model.numOfPoints,
-              codeList: model.codeList,
-              currentUser: FirebaseAuth.instance.currentUser);
+              codeList: model.codeList);
         }));
       },
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    tracksSubscription.cancel();
-    if (connectivityChangedSubscription != null)
-      connectivityChangedSubscription!.cancel();
+  List<TrackModel> createTrackModels() {
+    List<TrackModel> tracks = [];
+    final testTrack = TrackModel('test_track', 'Teszt pálya', TrackType.pointCollecting, 5,
+        ["k7jRe", "Zx9F2", "p3oQv", "gHs4d", "Xt6Yw"]);
+
+    final pointCollectingTrack = TrackModel('point_collecting', 'Pontbegyűjtő pálya', TrackType.pointCollecting, 20,
+        ["pT5yN", "bQ9fZ", "mV3sD", "xR7wP", "jK2gL", "zH6tW", "cE1aM", "oU4iX", "rS8hB", "dI0cQ", "wO7nY", "tG4vJ", "lF9uZ", "qA3eR", "vM5kP", "gX1oT", "sD6zL", "nB2jK", "iY8rQ", "fJ0pW"]
+    );
+
+    final fixOrderTrack = TrackModel('fix_order', 'Kötött sorrendű pálya', TrackType.fixedOrderCollecting, 20,
+        ["r7vKp", "m3yNq", "s2lOt", "t4fPu", "n8xGw", "v6aHz", "u5qLe", "j9dCi", "g0bMr", "i1cYs", "q3wJt", "o4hXu", "l2eFv", "h7rZw", "p6mSa", "f8kXt", "w9nYv", "c5pHx", "e0tUy", "a3oLz"]
+    );
+
+    tracks.add(testTrack);
+    tracks.add(pointCollectingTrack);
+    tracks.add(fixOrderTrack);
+    return tracks;
   }
 }
